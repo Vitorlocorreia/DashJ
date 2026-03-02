@@ -2,8 +2,9 @@ import os
 import json
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 
-app = Flask(__name__, static_folder='.', static_url_path='')
-app.secret_key = 'grupo_jota_secret_key' # Em produção, use uma chave segura
+app = Flask(__name__)
+# Chave secreta via variável de ambiente para produção no Vercel
+app.secret_key = os.environ.get('SECRET_KEY', 'grupo_jota_secret_default_12345')
 
 def load_users():
     with open('users.json', 'r', encoding='utf-8') as f:
@@ -11,6 +12,7 @@ def load_users():
 
 @app.route('/')
 def index():
+    # Se o usuário acessar a raiz e não estiver logado, garante que vá para o login
     if 'username' in session:
         return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
@@ -25,6 +27,7 @@ def login():
         user = next((u for u in users if u['login'] == username and u['senha'] == password), None)
         
         if user:
+            session.clear() # Limpa qualquer sessão anterior por segurança
             session['username'] = user['login']
             session['relatorio'] = user['relatorio_file']
             session['nome'] = user['nome']
@@ -39,10 +42,8 @@ def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
     
-    # Servir o arquivo HTML estático do cliente
-    # Nota: Em um sistema final, o dashboard seria um template dinâmico único
-    # Mas para rapidez, serviremos os arquivos que o usuário já tem.
-    return send_from_directory('.', session['relatorio'])
+    # Servir o arquivo HTML estático do cliente da pasta static/reports
+    return send_from_directory('static/reports', session['relatorio'])
 
 @app.route('/logout')
 def logout():
@@ -50,5 +51,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    # Usar porta 5000 como padrão
     app.run(debug=True, port=5000)
