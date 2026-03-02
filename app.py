@@ -5,6 +5,11 @@ from flask import Flask, render_template, request, redirect, url_for, session, s
 app = Flask(__name__)
 # Chave secreta via variável de ambiente para produção no Vercel
 app.secret_key = os.environ.get('SECRET_KEY', 'grupo_jota_secret_default_12345')
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=None # A sessão morre ao fechar o browser se permanent=False
+)
 
 def load_users():
     with open('users.json', 'r', encoding='utf-8') as f:
@@ -27,7 +32,8 @@ def login():
         user = next((u for u in users if u['login'] == username and u['senha'] == password), None)
         
         if user:
-            session.clear() # Limpa qualquer sessão anterior por segurança
+            session.clear() 
+            session.permanent = False # Garante que a sessão expire ao fechar o navegador
             session['username'] = user['login']
             session['relatorio'] = user['relatorio_file']
             session['nome'] = user['nome']
