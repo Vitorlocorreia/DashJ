@@ -137,6 +137,31 @@
             gap: 1.5rem;
         }
 
+        /* Botão de Logout */
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--gold);
+            color: var(--bg-base);
+        }
+
         .client-profile {
             display: flex;
             align-items: center;
@@ -679,6 +704,9 @@
                         alt="Mateus Saka">
                 </div>
             </div>
+            <a href="/logout" class="logout-btn">
+                <i class="ph-bold ph-sign-out"></i> Sair
+            </a>
         </div>
     </header>
 
