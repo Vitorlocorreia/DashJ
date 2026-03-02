@@ -10,6 +10,11 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax'
 )
 
+# Serve arquivos da pasta public/ (Vercel faz isso automaticamente; Flask precisa de rota)
+@app.route('/public/<path:filename>')
+def public_files(filename):
+    return send_from_directory('public', filename)
+
 def load_users():
     with open('users.json', 'r', encoding='utf-8') as f:
         return json.load(f)['clientes']
