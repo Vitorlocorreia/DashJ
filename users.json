@@ -1,0 +1,28 @@
+{
+    "clientes": [
+        {
+            "login": "mateus",
+            "senha": "mateus2026",
+            "nome": "Mateus Saka",
+            "relatorio_file": "relatorio_Matheus_Saka.html"
+        },
+        {
+            "login": "basebjj",
+            "senha": "basebjj2026",
+            "nome": "Base BJJ",
+            "relatorio_file": "relatorio_basebjj.html"
+        },
+        {
+            "login": "rcgoleiros",
+            "senha": "rcgoleiros2026",
+            "nome": "RC Goleiros",
+            "relatorio_file": "relatorio_rcgoleiros.html"
+        },
+        {
+            "login": "futtime",
+            "senha": "futtime2026",
+            "nome": "Futtime",
+            "relatorio_file": "relatoriofuttime.html"
+        }
+    ]
+}
