@@ -8,8 +8,7 @@
     <!-- Mutações Tipográficas: Bodoni (Elegância Extrema) e Inter (Performance Big Tech) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Inter:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -114,7 +113,7 @@
         }
 
         .brand-meta h1 {
-            font-family: 'Bodoni Moda', serif;
+            font-family: 'Inter', sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
             letter-spacing: -0.03em;
@@ -185,7 +184,8 @@
         }
 
         .client-name {
-            font-family: 'Bodoni Moda', serif;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-pure);
@@ -259,11 +259,12 @@
         }
 
         .kpi-master .kpi-val {
-            font-family: 'Bodoni Moda', serif;
+            font-family: 'Inter', sans-serif;
             font-size: clamp(4rem, 8vw, 7rem);
+            font-weight: 900;
             /* Typographic Brutalism */
             line-height: 0.9;
-            letter-spacing: -0.04em;
+            letter-spacing: -0.05em;
             background: linear-gradient(180deg, #FFF 0%, #888 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -306,8 +307,9 @@
         }
 
         .kpi-standard .kpi-val {
-            font-family: 'Bodoni Moda', serif;
+            font-family: 'Inter', sans-serif;
             font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 800;
             line-height: 1;
         }
 
@@ -343,8 +345,9 @@
         }
 
         .panel-title {
-            font-family: 'Bodoni Moda', serif;
+            font-family: 'Inter', sans-serif;
             font-size: 1.6rem;
+            font-weight: 800;
             color: var(--text-pure);
             line-height: 1.2;
         }
@@ -454,7 +457,8 @@
         }
 
         .eng-val {
-            font-family: 'Bodoni Moda', serif;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
             font-size: 2.2rem;
             font-weight: 700;
             line-height: 1;
@@ -488,7 +492,8 @@
         }
 
         .insight-text h3 {
-            font-family: 'Bodoni Moda', serif;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
             font-size: 2rem;
             margin-bottom: 1rem;
             color: var(--gold-bright);
@@ -817,7 +822,7 @@
         Chart.defaults.plugins.tooltip.borderColor = 'rgba(212, 175, 55, 0.4)';
         Chart.defaults.plugins.tooltip.borderWidth = 1;
         Chart.defaults.plugins.tooltip.titleFont = { size: 13, weight: '700', family: "'Inter', sans-serif" };
-        Chart.defaults.plugins.tooltip.bodyFont = { size: 14, family: "'Bodoni Moda', serif" };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 14, family: "'Inter', sans-serif" };
         Chart.defaults.plugins.tooltip.cornerRadius = 8;
         Chart.defaults.plugins.tooltip.displayColors = false;
 
@@ -896,7 +901,7 @@
                             ctx.restore();
 
                             // Número massivo central
-                            ctx.font = "bold 3rem 'Bodoni Moda'";
+                            ctx.font = "bold 3rem 'Inter'";
                             ctx.textBaseline = "middle";
                             ctx.fillStyle = "#FFFFFF";
                             const text = "75%";
