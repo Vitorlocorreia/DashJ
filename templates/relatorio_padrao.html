@@ -839,17 +839,6 @@
             <!-- Engagement Strip -->
             </div>
 
-            <!-- Dashboard Trend (Evolution) -->
-            <div class="dashboard-card trend-card fade-in delay-3" style="margin-top: 2rem;">
-                <div class="card-header">
-                    <h3><i class="ph-bold ph-trending-up"></i> Evolução de Performance</h3>
-                    <p>Crescimento de alcance nos últimos meses.</p>
-                </div>
-                <div class="chart-container" style="height: 300px; margin-top: 1.5rem;">
-                    <canvas id="trendChart"></canvas>
-                </div>
-            </div>
-
             <!-- Strategic Insight -->
             <div class="strategic-insight fade-in delay-4">
                 <i class="ph-fill ph-lightbulb-filament insight-icon"></i>
@@ -971,43 +960,6 @@
                     ctx.save();
                 }
             }]
-                });
-        // 3. Line Chart: Evolution Trend
-        const trendCtx = document.getElementById('trendChart').getContext('2d');
-        new Chart(trendCtx, {
-            type: 'line',
-            data: {
-                labels: {{ eixo_x | tojson }},
-            datasets: [{
-                label: 'Alcance Total',
-                data: {{ eixo_y | tojson }},
-            borderColor: '#D4AF37',
-            backgroundColor: 'rgba(212, 175, 55, 0.1)',
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#FFF'
-                        }]
-                    },
-            options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { font: { size: 11 } }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { font: { size: 11, weight: '600' }, color: '#FFFFFF' }
-                }
-            }
-        }
                 });
             }, 300);
         });
