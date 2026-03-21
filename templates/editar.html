@@ -3,231 +3,521 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Dashboard - Grupo Jota</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gerenciador Premium - JOTA MARKETING</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
         :root {
-            --bg: #0A0A0A;
-            --surface: #111111;
-            --gold: #D4AF37;
-            --text: #FFFFFF;
+            --primary: #c3922e;
+            --primary-soft: rgba(195, 146, 46, 0.1);
+            --bg-deep: #050505;
+            --bg-card: #111111;
+            --border: #222222;
+            --text-main: #ffffff;
             --text-dim: #888888;
-            --border: rgba(255, 255, 255, 0.1);
+            --success: #28a745;
+            --input-height: 54px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
             font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             margin: 0;
-            padding: 3rem 1rem;
-            display: flex;
-            justify-content: center;
+            padding: 0;
+            padding-bottom: 100px;
+            overflow-x: hidden;
+            line-height: 1.5;
         }
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background: var(--surface);
-            padding: 2.5rem;
-            border-radius: 16px;
-            border: 1px solid var(--border);
+        .app-header {
+            padding: 24px 20px 10px 20px;
+            background: linear-gradient(to bottom, var(--bg-deep), transparent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
         }
 
         h1 {
-            color: var(--gold);
-            margin-top: 0;
-            margin-bottom: 2rem;
-            font-size: 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+        .client-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+            text-transform: uppercase;
         }
 
-        .form-group {
+        /* HISTORY NAVIGATION PILLS */
+        .history-pills {
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 10px 20px;
+            gap: 10px;
+            scrollbar-width: none;
+            margin-bottom: 5px;
         }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
+        .history-pills::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pill {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .pill.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .pill.add-new {
+            background: transparent;
+            border: 1px dashed var(--primary);
+            color: var(--primary);
+        }
+
+        /* TABS NAVIGATION */
+        .tabs-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 20px;
+            gap: 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+            scrollbar-width: none;
+        }
+
+        .tabs-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-item {
+            padding: 12px 4px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+
+        .tab-item.active {
+            color: var(--primary);
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* FORM SECTIONS */
+        .form-content {
+            padding: 0 20px;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin: 0 0 8px 0;
+        }
+
+        .section-header p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin: 0;
+        }
+
+        /* INPUTS */
+        .form-group {
+            margin-bottom: 24px;
         }
 
         label {
-            font-size: 0.85rem;
-            color: var(--text-dim);
+            display: block;
+            font-size: 0.75rem;
             font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.5px;
         }
 
         input,
-        textarea {
-            background: var(--bg);
+        textarea,
+        select {
+            width: 100%;
+            height: var(--input-height);
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 0 16px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        textarea {
+            height: auto;
+            padding: 16px;
+            min-height: 120px;
+            resize: vertical;
         }
 
         input:focus,
         textarea:focus {
-            outline: none;
-            border-color: var(--gold);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-soft);
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 120px;
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
 
-        .btn-group {
-            margin-top: 2.5rem;
+        /* ACTIONS BAR (FIXED BOTTOM) */
+        .actions-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-card);
+            padding: 20px;
             display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid var(--border);
+            z-index: 1000;
         }
 
         .btn {
-            padding: 0.8rem 2rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            flex: 1;
+            height: 52px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             cursor: pointer;
+            transition: 0.2s active;
+            border: none;
             text-decoration: none;
-            transition: all 0.3s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
         }
 
         .btn-primary {
-            background: var(--gold);
-            color: var(--bg);
-            border: none;
+            background: var(--primary);
+            color: #000;
         }
 
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
+        .btn-outline {
             background: transparent;
-            color: var(--text);
             border: 1px solid var(--border);
+            color: var(--text-main);
         }
 
-        .btn-secondary:hover {
-            border-color: var(--gold);
-            color: var(--gold);
+        .btn-view {
+            width: 52px;
+            flex: none;
+            background: var(--bg-deep);
+            color: var(--primary);
+            border: 1px solid var(--primary);
         }
 
-        .section-title {
-            grid-column: 1 / -1;
-            font-size: 1.2rem;
-            color: #fff;
-            margin-top: 1rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0.5rem;
+        /* TOAST SUCCESS */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            animation: toastIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes toastIn {
+            from {
+                top: -50px;
+                opacity: 0;
+            }
+
+            to {
+                top: 24px;
+                opacity: 1;
+            }
+        }
+
+        small {
+            color: var(--text-dim);
+            display: block;
+            margin-top: 4px;
+            font-size: 0.7rem;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <h1>Editar Dashboard</h1>
+    {% if success %}
+    <div class="toast" id="successToast">
+        <i class="ph-bold ph-check"></i> Alterações Salvas!
+    </div>
+    <script>
+        setTimeout(() => { document.getElementById('successToast').style.display = 'none'; }, 3000);
+    </script>
+    {% endif %}
 
-        <form action="/editar-dashboard" method="POST">
-            <div class="form-grid">
+    <header class="app-header">
+        <a href="/admin" class="back-nav">
+            <i class="ph-bold ph-arrow-left"></i> Painel Geral
+        </a>
+        <h1>{{ cliente.nome_empresa }}</h1>
+        <div class="client-badge">Edição Premium</div>
+    </header>
 
-                <h3 class="section-title">Informações Gerais</h3>
-                <div class="form-group full-width">
-                    <label>Mês de Referência</label>
-                    <input type="text" name="mes_referencia" value="{{ dados.mes_referencia }}" required>
-                </div>
-
-                <h3 class="section-title">KPIs Principais</h3>
-                <div class="form-group">
-                    <label>Alcance Total</label>
-                    <input type="text" name="kpi_alcance_total" value="{{ dados.kpi_alcance_total }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Visitas</label>
-                    <input type="text" name="kpi_visitas" value="{{ dados.kpi_visitas }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Novos Seguidores</label>
-                    <input type="text" name="kpi_novos_seg" value="{{ dados.kpi_novos_seg }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Base Atual</label>
-                    <input type="text" name="kpi_base_atual" value="{{ dados.kpi_base_atual }}" required>
-                </div>
-
-                <h3 class="section-title">Engajamento</h3>
-                <div class="form-group">
-                    <label>Curtidas</label>
-                    <input type="text" name="eng_curtidas" value="{{ dados.eng_curtidas }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Comentários</label>
-                    <input type="text" name="eng_comentarios" value="{{ dados.eng_comentarios }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Compartilhamentos</label>
-                    <input type="text" name="eng_compartilhamentos" value="{{ dados.eng_compartilhamentos }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Reposts</label>
-                    <input type="text" name="eng_reposts" value="{{ dados.eng_reposts }}" required>
-                </div>
-
-                <h3 class="section-title">Alcance (Porcentagem %)</h3>
-                <div class="form-group">
-                    <label>Reels</label>
-                    <input type="number" step="0.1" name="chart_reels" value="{{ dados.chart_reels }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Stories</label>
-                    <input type="number" step="0.1" name="chart_stories" value="{{ dados.chart_stories }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Posts</label>
-                    <input type="number" step="0.1" name="chart_posts" value="{{ dados.chart_posts }}" required>
-                </div>
-
-                <h3 class="section-title">Audiência (Porcentagem %)</h3>
-                <div class="form-group">
-                    <label>Não Seguidores</label>
-                    <input type="number" step="0.1" name="aud_nao_seguidores" value="{{ dados.aud_nao_seguidores }}"
-                        required>
-                </div>
-                <div class="form-group">
-                    <label>Seguidores</label>
-                    <input type="number" step="0.1" name="aud_seguidores" value="{{ dados.aud_seguidores }}" required>
-                </div>
-
-                <h3 class="section-title">Direcionamento Estratégico</h3>
-                <div class="form-group full-width">
-                    <label>Texto Estratégico (Suporta tags HTML como &lt;strong&gt;, &lt;br&gt;)</label>
-                    <textarea name="insight_texto" required>{{ dados.insight_texto }}</textarea>
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <a href="/dashboard" class="btn btn-secondary">Cancelar / Voltar</a>
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-            </div>
-        </form>
+    <div class="history-pills">
+        {% for m in meses_disponiveis %}
+        <a href="?mes={{ m }}" class="pill {% if m == dados.mes_referencia %}active{% endif %}">{{ m }}</a>
+        {% endfor %}
+        <a href="/admin/editar/{{ cliente.login }}?new=1" class="pill add-new">+ Novo Mês</a>
     </div>
 
+    <nav class="tabs-container">
+        <div class="tab-item active" onclick="switchTab(this, 'identidade')">Identidade</div>
+        <div class="tab-item" onclick="switchTab(this, 'kpis')">KPIs</div>
+        <div class="tab-item" onclick="switchTab(this, 'graficos')">Gráficos</div>
+        <div class="tab-item" onclick="switchTab(this, 'engajamento')">Engajamento</div>
+        <div class="tab-item" onclick="switchTab(this, 'estrategia')">Estratégia</div>
+    </nav>
+
+    <form method="POST" id="mainForm">
+        <div class="form-content">
+            <!-- SEÇÃO 01: IDENTIDADE -->
+            <section id="identidade" class="content-section active">
+                <div class="section-header">
+                    <h2>Identidade Visual</h2>
+                    <p>Configure como a marca aparece no dashboard.</p>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Nome da Empresa</label>
+                        <input type="text" name="nome_empresa" value="{{ cliente.nome_empresa }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Slogan / Subtítulo</label>
+                        <input type="text" name="subtitulo" value="{{ cliente.subtitulo }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Logotipo (Base64)</label>
+                    <textarea name="logo_base64" rows="4"
+                        placeholder="Cole aqui o base64 da imagem se dejesar trocar...">{{ cliente.logo_base64 }}</textarea>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 02: KPIs -->
+            <section id="kpis" class="content-section">
+                <div class="section-header">
+                    <h2>Métricas de Performance</h2>
+                    <p>Números principais exibidos no topo.</p>
+                </div>
+                <div class="form-group">
+                    <label>Mês de Referência</label>
+                    <div style="position: relative;">
+                        <input type="text" name="mes_referencia" id="mes_referencia"
+                            value="{{ dados.mes_referencia or '' }}" placeholder="Ex: Março/2026"
+                            style="padding-right: 45px;">
+                        <i class="ph-bold ph-calendar-blank"
+                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 1.2rem; pointer-events: none;"></i>
+                    </div>
+                    <small>Se você trocar o mês e salvar, um novo registro histórico será criado.</small>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Alcance Total</label>
+                        <input type="text" name="kpi_alcance_total" value="{{ dados.kpi_alcance_total or '0' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Visitas ao Perfil</label>
+                        <input type="text" name="kpi_visitas" value="{{ dados.kpi_visitas or '0' }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Novos Seguidores</label>
+                        <input type="text" name="kpi_novos_seg" value="{{ dados.kpi_novos_seg or '0' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Base Atual</label>
+                        <input type="text" name="kpi_base_atual" value="{{ dados.kpi_base_atual or '0' }}">
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 03: GRÁFICOS -->
+            <section id="graficos" class="content-section">
+                <div class="section-header">
+                    <h2>Distribuição</h2>
+                    <p>Valores para os gráficos interativos.</p>
+                </div>
+                <div class="row">
+                    <div class="form-group"><label>Reels (%)</label><input type="number" step="0.1" name="chart_reels"
+                            value="{{ dados.chart_reels or 0 }}"></div>
+                    <div class="form-group"><label>Stories (%)</label><input type="number" step="0.1"
+                            name="chart_stories" value="{{ dados.chart_stories or 0 }}"></div>
+                </div>
+                <div class="row">
+                    <div class="form-group"><label>Posts (%)</label><input type="number" step="0.1" name="chart_posts"
+                            value="{{ dados.chart_posts or 0 }}"></div>
+                    <div class="form-group"><label>Aud. Não Seg (%)</label><input type="number" step="0.1"
+                            name="aud_nao_seguidores" value="{{ dados.aud_nao_seguidores or 0 }}"></div>
+                </div>
+                <div class="form-group"><label>Aud. Seguidores (%)</label><input type="number" step="0.1"
+                        name="aud_seguidores" value="{{ dados.aud_seguidores or 0 }}"></div>
+            </section>
+
+            <!-- SEÇÃO 04: ENGAJAMENTO -->
+            <section id="engajamento" class="content-section">
+                <div class="section-header">
+                    <h2>Interações</h2>
+                    <p>Total de engajamento do mês.</p>
+                </div>
+                <div class="row">
+                    <div class="form-group"><label>Curtidas</label><input type="text" name="eng_curtidas"
+                            value="{{ dados.eng_curtidas or '0' }}"></div>
+                    <div class="form-group"><label>Comentários</label><input type="text" name="eng_comentarios"
+                            value="{{ dados.eng_comentarios or '0' }}"></div>
+                </div>
+                <div class="row">
+                    <div class="form-group"><label>Compartilhamentos</label><input type="text"
+                            name="eng_compartilhamentos" value="{{ dados.eng_compartilhamentos or '0' }}"></div>
+                    <div class="form-group"><label>Reposts</label><input type="text" name="eng_reposts"
+                            value="{{ dados.eng_reposts or '0' }}"></div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 05: ESTRATÉGIA -->
+            <section id="estrategia" class="content-section">
+                <div class="section-header">
+                    <h2>Direcionamento</h2>
+                    <p>Insights para o cliente.</p>
+                </div>
+                <div class="form-group">
+                    <label>Texto Estratégico (Suporta HTML)</label>
+                    <textarea name="insight_texto" rows="10">{{ dados.insight_texto or '' }}</textarea>
+                </div>
+            </section>
+        </div>
+
+        <div class="actions-bar">
+            <a href="/dashboard/{{ cliente.login }}" class="btn btn-view" title="Ver Live"><i
+                    class="ph-bold ph-eye"></i></a>
+            <button type="submit" class="btn btn-primary"><i class="ph-bold ph-floppy-disk"></i> Salvar Período</button>
+        </div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
+    <script>
+        flatpickr("#mes_referencia", {
+            locale: "pt", dateFormat: "F/Y", theme: "dark",
+            plugins: [new monthSelectPlugin({ shorthand: false, dateFormat: "F/Y", altFormat: "F/Y", theme: "dark" })]
+        });
+
+        function switchTab(el, sectionId) {
+            document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - JOTA MARKETING</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #c3922e;
+            --primary-soft: rgba(195, 146, 46, 0.1);
+            --bg-deep: #050505;
+            --bg-card: #111111;
+            --border: #222222;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            margin: 0;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .header-sub {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        .logout-link {
+            color: #ff4d4d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .logout-link:hover {
+            background: rgba(255, 77, 77, 0.1);
+        }
+
+        /* CLIENT GRID */
+        .client-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .client-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .client-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .client-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .client-card:hover::after {
+            opacity: 1;
+        }
+
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            padding: 15px;
+            border: 4px solid var(--bg-deep);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .client-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .client-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .client-subtitle {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-dim);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
+
+            .client-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .logout-link {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <h1>Dashboard Manager</h1>
+            <div class="header-sub">Gerencie as métricas de performance dos seus parceiros.</div>
+        </div>
+        <a href="/logout" class="logout-link">
+            <i class="ph-bold ph-sign-out"></i> Sair do Painel
+        </a>
+    </header>
+
+    <main>
+        <div class="client-grid">
+            {% for cliente in clientes %}
+            <div class="client-card">
+                <div class="logo-container">
+                    {% if cliente.logo_base64 %}
+                    <img src="data:image/png;base64,{{ cliente.logo_base64 }}" alt="{{ cliente.nome_empresa }}"
+                        class="client-logo">
+                    {% else %}
+                    <i class="ph ph-briefcase" style="font-size: 40px; color: #000"></i>
+                    {% endif %}
+                </div>
+
+                <div class="client-name">{{ cliente.nome_empresa }}</div>
+                <div class="client-subtitle">{{ cliente.subtitulo }}</div>
+
+                <div class="actions">
+                    <a href="/dashboard/{{ cliente.login }}" class="btn btn-primary" title="Visualizar Live">
+                        <i class="ph-bold ph-eye"></i> Ver Live
+                    </a>
+                    <a href="/admin/editar/{{ cliente.login }}" class="btn btn-outline">
+                        <i class="ph-bold ph-pencil-simple"></i> Editar
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+</body>
+
+</html>

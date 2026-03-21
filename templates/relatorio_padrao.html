@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Relatório Fevereiro - Grupo Jota | MKT Esportivo</title>
+    <!-- Mutações Tipográficas: Bodoni (Elegância Extrema) e Inter (Performance Big Tech) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* CSS Reset / Base Setup */
+        :root {
+            /* Palette Anti-Cliché (Dark Brutalism + Gold) */
+            --bg-absolute: #000000;
+            --bg-surface-1: #0A0A0A;
+            --bg-surface-2: #111111;
+
+            --gold-raw: #D4AF37;
+            --gold-bright: #FDF4E3;
+            --gold-dim: rgba(212, 175, 55, 0.4);
+
+            --text-pure: #FFFFFF;
+            --text-dim: #888888;
+
+            --border-strict: rgba(255, 255, 255, 0.08);
+
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--bg-absolute);
+            color: var(--text-pure);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Ruído Téxtil para Profundidade (Grain) */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* -------------------------------------------------------------
+           HEADER - ESTRUTURADO PARA MOBILE & DESKTOP
+        ------------------------------------------------------------- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-strict);
+            padding: 1.25rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: padding 0.3s var(--ease-snappy);
+        }
+
+        .brand-cluster {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .logo-box {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-absolute);
+            border-radius: 10px;
+            /* Bordas mais rígidas, estilo Big Tech */
+            border: 1px solid var(--gold-raw);
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease-snappy);
+            will-change: transform;
+        }
+
+        .logo-box:hover {
+            transform: scale(1.08) rotate(-2deg);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brand-meta h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .brand-meta p {
+            font-size: 0.65rem;
+            color: var(--gold-raw);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        /* Elemento Cliente (Header Right) */
+        .client-cluster {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* Botão de Logout */
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--gold);
+            color: var(--bg-base);
+        }
+
+        .client-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-surface-1);
+            border: 1px solid var(--border-strict);
+            border-radius: 12px;
+            transition: all 0.3s var(--ease-snappy);
+        }
+
+        .client-profile:hover {
+            border-color: var(--gold-dim);
+            background: var(--bg-surface-2);
+        }
+
+        .client-info {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .client-name {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-pure);
+        }
+
+        .client-status {
+            font-size: 0.65rem;
+            color: var(--gold-raw);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .client-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            /* Quebrando o clichê do 50% border-radius */
+            border: 1px solid var(--gold-raw);
+            overflow: hidden;
+            background: var(--bg-absolute);
+        }
+
+        .client-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .date-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-strict);
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            transition: 0.2s;
+        }
+
+        .date-pill:hover {
+            border-color: var(--gold-dim);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .date-pill i {
+            color: var(--gold-raw);
+        }
+
+        /* DROPDOWN HISTORICO */
+        .mes-dropdown {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            background: #111;
+            border: 1px solid var(--border-strict);
+            border-radius: 12px;
+            min-width: 180px;
+            display: none;
+            flex-direction: column;
+            padding: 8px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+        }
+
+        .mes-dropdown.show {
+            display: flex;
+        }
+
+        .mes-item {
+            padding: 10px 15px;
+            color: var(--text-dim);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            text-align: left;
+        }
+
+        .mes-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-bright);
+        }
+
+        .mes-item.active {
+            color: #FFF;
+            font-weight: 700;
+            background: var(--gold-dim);
+        }
+
+        /* -------------------------------------------------------------
+           LAYOUT CORE - TYPOGRAPHIC BRUTALISM
+        ------------------------------------------------------------- */
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 4rem 5%;
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
+        }
+
+        /* -------------------------------------------------------------
+           HERO KPIs (ASYMMETRIC)
+        ------------------------------------------------------------- */
+        .hero-kpis {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr;
+            gap: 2rem;
+            align-items: end;
+        }
+
+        .kpi-master {
+            border-right: 1px solid var(--border-strict);
+            padding-right: 2rem;
+        }
+
+        .kpi-master .kpi-val {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(4rem, 8vw, 7rem);
+            font-weight: 900;
+            /* Typographic Brutalism */
+            line-height: 0.9;
+            letter-spacing: -0.05em;
+            background: linear-gradient(180deg, #FFF 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 1rem 0;
+        }
+
+        .kpi-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .kpi-label i {
+            color: var(--gold-raw);
+            font-size: 1.1rem;
+        }
+
+        .kpi-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-bright);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .kpi-standard {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .kpi-standard .kpi-val {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* -------------------------------------------------------------
+           BENTO FRAGMENTATION (CHARTS & DATA)
+        ------------------------------------------------------------- */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+
+        .panel {
+            background: var(--bg-surface-1);
+            border: 1px solid var(--border-strict);
+            border-radius: 16px;
+            /* Mais contido do que os 24px genéricos redondos */
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.4s ease;
+        }
+
+        .panel:hover {
+            border-color: var(--gold-dim);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .panel-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-pure);
+            line-height: 1.2;
+        }
+
+        .panel-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 0.4rem;
+        }
+
+        /* Panel Span Definitions */
+        .panel-performance {
+            grid-column: span 8;
+        }
+
+        .panel-audience {
+            grid-column: span 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .panel-engagement {
+            grid-column: span 12;
+            padding: 0;
+            /* Remove padding to allow full-bleed layout inside */
+            background: transparent;
+            border: none;
+        }
+
+        /* Container do chart para responsividade perfeita */
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            /* Altura fixa confortável para Safari */
+            margin-top: 1.5rem;
+            display: block;
+        }
+
+        canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Prevent canvas collapse in some WebKit versions */
+        canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* -------------------------------------------------------------
+           ENGAGEMENT STRIP (Brutal Horizontal Layout)
+        ------------------------------------------------------------- */
+        .engagement-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .eng-stat {
+            background: var(--bg-surface-1);
+            border: 1px solid var(--border-strict);
+            padding: 2rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s var(--ease-spring);
+        }
+
+        .eng-stat:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold-dim);
+        }
+
+        .eng-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gold-raw);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.4s var(--ease-spring);
+        }
+
+        .eng-stat:hover::before {
+            transform: scaleY(1);
+        }
+
+        .eng-icon {
+            font-size: 1.5rem;
+            color: var(--gold-raw);
+        }
+
+        .eng-val {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .eng-name {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* -------------------------------------------------------------
+           INSIGHT ALERT (Meticulous Typography)
+        ------------------------------------------------------------- */
+        .strategic-insight {
+            grid-column: span 12;
+            background: var(--bg-surface-2);
+            border-left: 4px solid var(--gold-raw);
+            padding: 3rem;
+            position: relative;
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .insight-icon {
+            font-size: 4rem;
+            color: var(--gold-raw);
+            flex-shrink: 0;
+        }
+
+        .insight-text h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--gold-bright);
+        }
+
+        .insight-text p {
+            font-size: 1.15rem;
+            color: #ccc;
+            line-height: 1.8;
+            max-width: 800px;
+        }
+
+        .insight-text strong {
+            color: var(--text-pure);
+        }
+
+        /* -------------------------------------------------------------
+           MEDIA QUERIES (FLUID RESPONSIVENESS)
+        ------------------------------------------------------------- */
+
+        /* TABLET LANDSCAPE & MILD DESKTOPS */
+        @media (max-width: 1200px) {
+            .hero-kpis {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 3rem;
+            }
+
+            .kpi-master {
+                grid-column: span 2;
+                border-right: none;
+                border-bottom: 1px solid var(--border-strict);
+                padding-right: 0;
+                padding-bottom: 2rem;
+            }
+
+            .panel-performance {
+                grid-column: span 12;
+            }
+
+            .panel-audience {
+                grid-column: span 12;
+                min-height: 400px;
+                /* garante espaco pro arco */
+            }
+        }
+
+        /* TABLET PORTRAIT */
+        @media (max-width: 900px) {
+            .engagement-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .strategic-insight {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+                padding: 2rem;
+            }
+
+            header {
+                padding: 1rem 5%;
+            }
+        }
+
+        /* MOBILE DEVICES (Smartphones) */
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .client-cluster {
+                width: 100%;
+                justify-content: space-between;
+                flex-direction: row-reverse;
+                /* Data esquerda, user direita */
+            }
+
+            .client-profile {
+                padding: 0.4rem;
+                gap: 0.5rem;
+            }
+
+            .client-info {
+                display: none;
+                /* Esconde nome no celular pra usar espaço cru, deixa só avatar */
+            }
+
+            .dashboard-container {
+                padding: 2rem 5%;
+                gap: 3rem;
+            }
+
+            .hero-kpis {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .kpi-master {
+                grid-column: 1;
+                border-bottom: 1px solid var(--border-strict);
+                padding-bottom: 1.5rem;
+            }
+
+            .kpi-master .kpi-val {
+                font-size: 4.5rem;
+                margin: 0.5rem 0;
+            }
+
+            .panel {
+                padding: 1.5rem;
+            }
+
+            .panel-title {
+                font-size: 1.3rem;
+            }
+
+            /* Container do chart para responsividade perfeita */
+            .chart-wrapper {
+                position: relative;
+                width: 100%;
+                height: 380px;
+                /* Altura fixa confortável para Safari */
+                margin-top: 1.5rem;
+                display: block;
+            }
+
+            canvas {
+                display: block;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* Prevent canvas collapse in some WebKit versions */
+            canvas {
+                display: block;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            .engagement-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .insight-icon {
+                font-size: 2.5rem;
+            }
+
+            .insight-text h3 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Entrance Animations */
+        .fade-in {
+            /* opacity: 0; removed for iOS Safari chart canvas bug */
+            transform: translateY(20px);
+            animation: fadeInAnim 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes fadeInAnim {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand-cluster">
+            <div class="logo-box">
+                <img src="data:image/png;base64,{{ cliente.logo_base64 }}" alt="Grupo Jota Logo">
+            </div>
+            <div class="brand-meta">
+                <h1>{{ cliente.nome_empresa }}</h1>
+                <p>{{ cliente.subtitulo }}</p>
+            </div>
+        </div>
+
+        <div class="client-cluster">
+            <div class="date-pill" onclick="document.getElementById('mes-selector').classList.toggle('show')"
+                style="cursor: pointer; position: relative;">
+                <i class="ph-fill ph-calendar-blank"></i>
+                {{ dados.mes_referencia }}
+                <i class="ph ph-caret-down" style="font-size: 0.8rem; margin-left: 5px;"></i>
+
+                <div id="mes-selector" class="mes-dropdown">
+                    {% for m in meses_disponiveis %}
+                    <a href="?mes={{ m }}" class="mes-item {% if m == dados.mes_referencia %}active{% endif %}">{{ m
+                        }}</a>
+                    {% endfor %}
+                    {% if not meses_disponiveis %}
+                    <span class="mes-item">Nenhum histórico</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="client-profile">
+                <div class="client-info">
+                    <span class="client-name">{{ cliente.nome_empresa }}</span>
+                    <span class="client-status">{{ dados.mes_referencia }}</span>
+                </div>
+                <div class="client-avatar">
+                    <img src="data:image/png;base64,{{ cliente.avatar_base64 }}" alt="RC GOLEIROS">
+                </div>
+            </div>
+            {% if session.role == "admin" %}
+            <a href="/admin/editar/{{ cliente.login }}" class="logout-btn"
+                style="margin-right: -10px; border-color: #888; color: #888;">
+                <i class="ph-bold ph-pencil-simple"></i> Editar
+            </a>
+            {% endif %}
+            <a href="/logout" class="logout-btn">
+                <i class="ph-bold ph-sign-out"></i> Sair
+            </a>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+
+        <!-- TYPOGRAPHIC HERO (KPIs) -->
+        <section class="hero-kpis fade-in delay-1">
+            <div class="kpi-master">
+                <div class="kpi-label">
+                    <i class="ph-bold ph-eye"></i> Alcance Total
+                </div>
+                <div class="kpi-val"> {{ dados.kpi_alcance_total }} </div>
+                <div class="kpi-trend">
+                    <i class="ph-bold ph-trend-up"></i> Alcance Massivo
+                </div>
+            </div>
+
+            <div class="kpi-standard">
+                <div class="kpi-label"><i class="ph-bold ph-user-focus"></i> Visitas</div>
+                <div class="kpi-val"> {{ dados.kpi_visitas }} </div>
+                <div class="kpi-trend"><i class="ph-bold ph-arrow-up-right"></i> Conversão</div>
+            </div>
+
+            <div class="kpi-standard">
+                <div class="kpi-label"><i class="ph-bold ph-user-plus"></i> Novos Seg.</div>
+                <div class="kpi-val"> {{ dados.kpi_novos_seg }} </div>
+                <div class="kpi-trend"><i class="ph-bold ph-sparkle"></i> Orgânico</div>
+            </div>
+
+            <div class="kpi-standard">
+                <div class="kpi-label"><i class="ph-bold ph-users-four"></i> Base Atual</div>
+                <div class="kpi-val" style="color: var(--gold-raw)"> {{ dados.kpi_base_atual }} </div>
+            </div>
+        </section>
+
+        <!-- DATA PANELS -->
+        <section class="data-grid fade-in delay-2">
+
+            <!-- Performance Chart -->
+            <div class="panel panel-performance">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Performance por Formato</h2>
+                        <p class="panel-subtitle">Alcance segmentado (Reels vs Stories)</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="contentChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Audience Chart -->
+            <div class="panel panel-audience">
+                <div class="chart-wrapper">
+                    <canvas id="audienceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Engagement Strip -->
+            </div>
+
+            <!-- Dashboard Trend (Evolution) -->
+            <div class="dashboard-card trend-card fade-in delay-3" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3><i class="ph-bold ph-trending-up"></i> Evolução de Performance</h3>
+                    <p>Crescimento de alcance nos últimos meses.</p>
+                </div>
+                <div class="chart-container" style="height: 300px; margin-top: 1.5rem;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Strategic Insight -->
+            <div class="strategic-insight fade-in delay-4">
+                <i class="ph-fill ph-lightbulb-filament insight-icon"></i>
+                <div class="insight-text">
+                    <h3>Direcionamento Estratégico</h3>
+                    <p>{{ dados.insight_texto | safe }}</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Chart Configuration (Otimizado para BIG TECH standards) -->
+    <script>
+        // Chart.js Globo Configs
+        Chart.defaults.color = '#888888';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.plugins.tooltip.backgroundColor = '#0A0A0A';
+        Chart.defaults.plugins.tooltip.padding = 16;
+        Chart.defaults.plugins.tooltip.borderColor = 'rgba(212, 175, 55, 0.4)';
+        Chart.defaults.plugins.tooltip.borderWidth = 1;
+        Chart.defaults.plugins.tooltip.titleFont = { size: 13, weight: '700', family: "'Inter', sans-serif" };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 14, family: "'Inter', sans-serif" };
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.displayColors = false;
+
+        // Aguarda o carregamento completo para o Safari/iOS calcular o layout
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                // 1. Bar Chart: Performance
+                const contentCtx = document.getElementById('contentChart').getContext('2d');
+
+                new Chart(contentCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Reels', 'Stories', 'Posts'],
+                        datasets: [{
+                            label: 'Alcance',
+                            data: [{{ dados.chart_reels }}, {{ dados.chart_stories }}, {{ dados.chart_posts }}],
+                backgroundColor: ['#D4AF37', 'rgba(255,255,255,0.15)', 'rgba(255,255,255,0.05)'],
+                borderWidth: 0,
+                borderRadius: 4,
+                barThickness: 'flex',
+                maxBarThickness: 120
+                        }]
+                    },
+            options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+                    border: { display: false },
+                    ticks: { callback: v => v + '%', padding: 10 }
+                },
+                x: {
+                    grid: { display: false },
+                    border: { display: false },
+                    ticks: { font: { weight: '600' }, padding: 10, color: '#FFFFFF' }
+                }
+            }
+        }
+                });
+
+        const audienceCtx = document.getElementById('audienceChart').getContext('2d');
+
+        new Chart(audienceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Não Seguidores', 'Seguidores'],
+                datasets: [{
+                    data: [{{ dados.aud_nao_seguidores }}, {{ dados.aud_seguidores }}],
+            backgroundColor: ['#D4AF37', '#111111'], // Alto contraste
+            borderColor: '#000000',
+            borderWidth: 2,
+            hoverOffset: 10
+        }]
+                    },
+            options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '85%', // Anel muito fino e elegante
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 20, usePointStyle: true, color: '#ccc', font: { size: 11 } }
+                }
+            },
+            layout: {
+                padding: { top: 10, bottom: 20 }
+            }
+        },
+            plugins: [{
+                id: 'centerText',
+                beforeDraw: (chart) => {
+                    const { width, height, ctx } = chart;
+                    ctx.restore();
+
+                    // Número massivo central
+                    ctx.font = "bold 3rem 'Inter'";
+                    ctx.textBaseline = "middle";
+                    ctx.fillStyle = "#FFFFFF";
+                    const text = "{{ dados.aud_nao_seguidores | int }}%";
+                    const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                    // Ajuste o offset do texto base para não bater na legenda
+                    const textY = (height / 2) - 15;
+                    ctx.fillText(text, textX, textY);
+
+                    // Legendinha abaixo
+                    ctx.font = "600 0.7rem 'Inter'";
+                    ctx.fillStyle = "#D4AF37";
+                    const label = "NÃO SEGUIDORES";
+                    const labelX = Math.round((width - ctx.measureText(label).width) / 2);
+                    ctx.fillText(label, labelX, textY + 35);
+                    ctx.save();
+                }
+            }]
+                });
+        // 3. Line Chart: Evolution Trend
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: {{ eixo_x | tojson }},
+            datasets: [{
+                label: 'Alcance Total',
+                data: {{ eixo_y | tojson }},
+            borderColor: '#D4AF37',
+            backgroundColor: 'rgba(212, 175, 55, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#FFF'
+                        }]
+                    },
+            options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { font: { size: 11 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 11, weight: '600' }, color: '#FFFFFF' }
+                }
+            }
+        }
+                });
+            }, 300);
+        });
+    </script>
+</body>
+
+</html>

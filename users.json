@@ -1,6 +1,12 @@
 {
     "clientes": [
         {
+            "login": "admin",
+            "senha": "admin2026",
+            "nome": "Grupo Jota Admin",
+            "role": "admin"
+        },
+        {
             "login": "mateus",
             "senha": "mateus2026",
             "nome": "Mateus Saka",

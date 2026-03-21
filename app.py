@@ -8,18 +8,15 @@ load_dotenv()
 
 MONGO_URI = os.environ.get('MONGO_URI')
 client = MongoClient(MONGO_URI)
-db = client['dashboard_jota']
-
+db = client['dashboard_db']
 
 app = Flask(__name__)
-# Chave secreta via variável de ambiente para produção no Vercel
 app.secret_key = os.environ.get('SECRET_KEY', 'grupo_jota_secret_default_12345')
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax'
 )
 
-# Serve arquivos da pasta public/ (Vercel faz isso automaticamente; Flask precisa de rota)
 @app.route('/public/<path:filename>')
 def public_files(filename):
     return send_from_directory('public', filename)
@@ -30,7 +27,6 @@ def load_users():
 
 @app.route('/')
 def index():
-    # Se o usuário acessar a raiz e não estiver logado, garante que vá para o login
     if 'username' in session:
         return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
@@ -46,10 +42,14 @@ def login():
         
         if user:
             session.clear() 
-            session.permanent = False # Garante que a sessão expire ao fechar o navegador
+            session.permanent = False 
             session['username'] = user['login']
-            session['relatorio'] = user['relatorio_file']
             session['nome'] = user['nome']
+            session['role'] = user.get('role', 'cliente')
+            
+            if session['role'] == 'admin':
+                return redirect(url_for('admin_panel'))
+                
             return redirect(url_for('dashboard'))
         else:
             return render_template('login.html', error='Login ou senha incorretos.')
@@ -57,51 +57,131 @@ def login():
     return render_template('login.html')
 
 @app.route('/dashboard')
-def dashboard():
+@app.route('/dashboard/<target_login>')
+def dashboard(target_login=None):
     if 'username' not in session:
         return redirect(url_for('login'))
     
-    # Se o cliente já tiver um template pronto na pasta templates, injetamos pelo Jinja2
-    # Por enquanto apenas rcgoleiros
-    if session['username'] == 'rcgoleiros':
-        client_data = db.clientes.find_one({"client_id": session['username']})
-        dados = client_data.get('dados', {}) if client_data else {}
-        return render_template(session['relatorio'], dados=dados)
-    else:
-        # Fallback para relatórios ainda estáticos
-        return send_from_directory('static/reports', session['relatorio'])
+    login_vinculado = target_login if (session.get('role') == 'admin' and target_login) else session['username']
+    
+    # 1. Busca info fixa do cliente
+    cliente_config = db.clientes.find_one({"login": login_vinculado})
+    if not cliente_config:
+        return f"Configuração do cliente '{login_vinculado}' não encontrada.", 404
 
-@app.route('/editar-dashboard', methods=['GET', 'POST'])
-def editar_dashboard():
-    if 'username' not in session:
+    # 2. Busca métricas do mês solicitado ou o mais recente da nova coleção
+    mes_selecionado = request.args.get('mes')
+    if mes_selecionado:
+        dados = db.metricas.find_one({"login": login_vinculado, "mes_referencia": mes_selecionado})
+    else:
+        dados = db.metricas.find_one({"login": login_vinculado}, sort=[("mes_referencia", -1)])
+    
+    if not dados:
+        dados = {"mes_referencia": "Sem dados"}
+        
+    # 3. Lista histórico para o seletor
+    historico_db = list(db.metricas.find({"login": login_vinculado}, {"mes_referencia": 1}).sort("mes_referencia", -1))
+    meses_disponiveis = [h['mes_referencia'] for h in historico_db]
+
+    # Previne erros no template
+    campos_formatacao = {
+        'kpi_alcance_total': '---', 'kpi_visitas': '---', 
+        'kpi_novos_seg': '---', 'kpi_base_atual': '---',
+        'mes_referencia': '---',
+        'chart_reels': 0, 'chart_stories': 0, 'chart_posts': 0,
+        'aud_nao_seguidores': 0, 'aud_seguidores': 0,
+        'eng_curtidas': '0', 'eng_comentarios': '0', 
+        'eng_compartilhamentos': '0', 'eng_reposts': '0',
+        'insight_texto': 'Direcionamento estratégico não cadastrado para este mês.'
+    }
+    for campo, default in campos_formatacao.items():
+        if campo not in dados:
+            dados[campo] = default
+
+    # 4. Dados para o gráfico de tendência (últimos 6 meses)
+    tendencia_db = list(db.metricas.find({"login": login_vinculado}, {"mes_referencia": 1, "kpi_alcance_total": 1}).sort("_id", 1).limit(6))
+    
+    eixo_x = [t['mes_referencia'] for t in tendencia_db]
+    eixo_y = []
+    for t in tendencia_db:
+        try:
+            # Tenta converter o alcance para número para o gráfico
+            val = str(t.get('kpi_alcance_total', '0')).replace('.', '').replace(',', '').replace(' ', '')
+            eixo_y.append(int(val))
+        except:
+            eixo_y.append(0)
+
+    return render_template('relatorio_padrao.html', 
+                          cliente=cliente_config, 
+                          dados=dados, 
+                          meses_disponiveis=meses_disponiveis,
+                          eixo_x=eixo_x,
+                          eixo_y=eixo_y)
+
+@app.route('/admin')
+def admin_panel():
+    if 'username' not in session or session.get('role') != 'admin':
         return redirect(url_for('login'))
     
-    client_id = session['username']
+    clientes = list(db.clientes.find({}, {"logo_base64": 0, "avatar_base64": 0}))
+    return render_template('admin.html', clientes=clientes)
+
+@app.route('/admin/editar/<target_login>', methods=['GET', 'POST'])
+def editar_cliente(target_login):
+    if 'username' not in session or session.get('role') != 'admin':
+        return redirect(url_for('login'))
     
     if request.method == 'POST':
         form_data = request.form.to_dict()
         
-        # Casting the chart data to floats because Chart.js expects numbers
-        try:
-            form_data['chart_reels'] = float(form_data.get('chart_reels', 0))
-            form_data['chart_stories'] = float(form_data.get('chart_stories', 0))
-            form_data['chart_posts'] = float(form_data.get('chart_posts', 0))
-            form_data['aud_nao_seguidores'] = float(form_data.get('aud_nao_seguidores', 0))
-            form_data['aud_seguidores'] = float(form_data.get('aud_seguidores', 0))
-        except ValueError:
-            pass # se der erro, deixa como string mesmo ou trata
+        # Converte campos numéricos
+        numeric_fields = ['chart_reels', 'chart_stories', 'chart_posts', 'aud_nao_seguidores', 'aud_seguidores']
+        for field in numeric_fields:
+            if field in form_data:
+                try:
+                    form_data[field] = float(form_data.get(field, 0))
+                except ValueError:
+                    form_data[field] = 0
             
-        db.clientes.update_one(
-            {"client_id": client_id},
-            {"$set": {"dados": form_data}},
-            upsert=True
-        )
-        return redirect(url_for('dashboard'))
+        # Salva na coleção de métricas separada (Historificando por Mês de Referência)
+        mes_ref = form_data.get('mes_referencia')
+        if mes_ref:
+            db.metricas.update_one(
+                {"login": target_login, "mes_referencia": mes_ref},
+                {"$set": form_data},
+                upsert=True
+            )
+        
+        # Atualiza info fixa do cliente
+        update_cliente = {}
+        if 'nome_empresa' in form_data: update_cliente["nome_empresa"] = form_data.get('nome_empresa')
+        if 'subtitulo' in form_data: update_cliente["subtitulo"] = form_data.get('subtitulo')
+        if form_data.get('logo_base64'): update_cliente['logo_base64'] = form_data.get('logo_base64')
+            
+        if update_cliente:
+            db.clientes.update_one({"login": target_login}, {"$set": update_cliente})
+            
+        return redirect(url_for('editar_cliente', target_login=target_login, mes=mes_ref, success=1))
     
-    client_data = db.clientes.find_one({"client_id": client_id})
-    dados = client_data.get('dados', {}) if client_data else {}
+    # GET: Busca info fixa e dados do mês solicitado
+    cliente_config = db.clientes.find_one({"login": target_login})
+    if not cliente_config:
+        return "Cliente não encontrado.", 404
+        
+    mes_editor = request.args.get('mes')
+    if mes_editor:
+        metrics_data = db.metricas.find_one({"login": target_login, "mes_referencia": mes_editor}) or {}
+    else:
+        metrics_data = db.metricas.find_one({"login": target_login}, sort=[("mes_referencia", -1)]) or {}
     
-    return render_template('editar.html', dados=dados)
+    historico = list(db.metricas.find({"login": target_login}, {"mes_referencia": 1}).sort("mes_referencia", -1))
+    meses_disponiveis = [h['mes_referencia'] for h in historico]
+        
+    return render_template('editar.html', 
+                          cliente=cliente_config, 
+                          dados=metrics_data, 
+                          meses_disponiveis=meses_disponiveis, 
+                          success=request.args.get('success'))
 
 @app.route('/logout')
 def logout():
